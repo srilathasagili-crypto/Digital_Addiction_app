@@ -8,7 +8,7 @@ import joblib
 model = joblib.load("digital_addiction_model.pkl")
 
 # ----------------------------
-# Page config
+# Page Configuration
 # ----------------------------
 st.set_page_config(
     page_title="Digital Addiction Prediction",
@@ -16,14 +16,14 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("📱 Digital Addiction Prediction App")
-st.write("Enter user details to predict addiction level.")
+st.title("📱 Digital Addiction Prediction")
+st.write("Enter the details below to predict Digital Addiction.")
 
 st.markdown("---")
 
 # ----------------------------
-# Feature order (VERY IMPORTANT)
-# Must match training features EXACTLY
+# Feature Order
+# (Must match X.columns exactly)
 # ----------------------------
 feature_order = [
     'age',
@@ -36,76 +36,144 @@ feature_order = [
     'notifications_per_day',
     'app_opens_per_day',
     'weekend_screen_time',
-    'stress_level'
+    'stress_level',
+    'academic_work_impact'
 ]
 
 # ----------------------------
-# Encoding maps (must match training encoding)
+# Encoding Maps
 # ----------------------------
 gender_map = {
-    "Male": 1,
-    "Female": 0
+    "Female": 0,
+    "Male": 1
 }
 
 stress_map = {
+    "High": 0,
     "Low": 1,
-    "Medium": 2,
-    "High": 0
+    "Medium": 2
+}
+
+academic_map = {
+    "High": 0,
+    "Low": 1,
+    "Medium": 2
 }
 
 # ----------------------------
-# UI Inputs
+# User Inputs
 # ----------------------------
-age = st.number_input("Age", 10, 100, 20)
 
-gender = st.selectbox("Gender", ["Male", "Female"])
+age = st.number_input(
+    "Age",
+    min_value=10,
+    max_value=100,
+    value=20
+)
 
-daily_screen_time_hours = st.number_input("Daily Screen Time (Hours)", 0.0, 24.0, 5.0)
+gender = st.selectbox(
+    "Gender",
+    ["Male", "Female"]
+)
 
-social_media_hours = st.number_input("Social Media Hours", 0.0, 24.0, 2.0)
+daily_screen_time_hours = st.number_input(
+    "Daily Screen Time (Hours)",
+    min_value=0.0,
+    max_value=24.0,
+    value=5.0
+)
 
-gaming_hours = st.number_input("Gaming Hours", 0.0, 24.0, 1.0)
+social_media_hours = st.number_input(
+    "Social Media Hours",
+    min_value=0.0,
+    max_value=24.0,
+    value=2.0
+)
 
-work_study_hours = st.number_input("Work/Study Hours", 0.0, 24.0, 6.0)
+gaming_hours = st.number_input(
+    "Gaming Hours",
+    min_value=0.0,
+    max_value=24.0,
+    value=1.0
+)
 
-sleep_hours = st.number_input("Sleep Hours", 0.0, 24.0, 7.0)
+work_study_hours = st.number_input(
+    "Work / Study Hours",
+    min_value=0.0,
+    max_value=24.0,
+    value=6.0
+)
 
-notifications_per_day = st.number_input("Notifications Per Day", 0, 500, 100)
+sleep_hours = st.number_input(
+    "Sleep Hours",
+    min_value=0.0,
+    max_value=24.0,
+    value=7.0
+)
 
-app_opens_per_day = st.number_input("App Opens Per Day", 0, 500, 60)
+notifications_per_day = st.number_input(
+    "Notifications Per Day",
+    min_value=0,
+    max_value=1000,
+    value=100
+)
 
-weekend_screen_time = st.number_input("Weekend Screen Time", 0.0, 24.0, 7.0)
+app_opens_per_day = st.number_input(
+    "App Opens Per Day",
+    min_value=0,
+    max_value=1000,
+    value=60
+)
 
-stress_level = st.selectbox("Stress Level", ["Low", "Medium", "High"])
+weekend_screen_time = st.number_input(
+    "Weekend Screen Time (Hours)",
+    min_value=0.0,
+    max_value=24.0,
+    value=7.0
+)
+
+stress_level = st.selectbox(
+    "Stress Level",
+    ["Low", "Medium", "High"]
+)
+
+academic_work_impact = st.selectbox(
+    "Academic Work Impact",
+    ["Low", "Medium", "High"]
+)
 
 st.markdown("---")
-
-# ----------------------------
-# Create input dataframe
-# ----------------------------
-input_data = pd.DataFrame([[
-    age,
-    gender_map[gender],
-    daily_screen_time_hours,
-    social_media_hours,
-    gaming_hours,
-    work_study_hours,
-    sleep_hours,
-    notifications_per_day,
-    app_opens_per_day,
-    weekend_screen_time,
-    stress_map[stress_level]
-]], columns=feature_order)
 
 # ----------------------------
 # Prediction
 # ----------------------------
 if st.button("Predict"):
 
+    input_data = pd.DataFrame([[
+        age,
+        gender_map[gender],
+        daily_screen_time_hours,
+        social_media_hours,
+        gaming_hours,
+        work_study_hours,
+        sleep_hours,
+        notifications_per_day,
+        app_opens_per_day,
+        weekend_screen_time,
+        stress_map[stress_level],
+        academic_map[academic_work_impact]
+    ]], columns=feature_order)
+
     prediction = model.predict(input_data)[0]
 
-    # If model is label encoded (0/1 or 0/1/2)
+    st.subheader("Prediction Result")
+
     if prediction == 1:
-        st.error("⚠️ Result: Addicted")
+        st.error("⚠️ Addicted")
     else:
-        st.success("✅ Result: Not Addicted")
+        st.success("✅ Not Addicted")
+
+    st.markdown("---")
+
+    st.write("### Input Summary")
+    st.dataframe(input_data)
