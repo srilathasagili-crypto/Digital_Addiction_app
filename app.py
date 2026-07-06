@@ -168,10 +168,10 @@ if st.button("Predict"):
 
     st.subheader("Prediction Result")
 
-    if prediction == 1:
-        st.error("⚠️ Addicted")
-    else:
-        st.success("✅ Not Addicted")
+if prediction == 0:
+    st.error("⚠️ Addicted")
+else:
+    st.success("✅ Not Addicted")
 
     st.markdown("---")
 
