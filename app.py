@@ -3,9 +3,10 @@ import pandas as pd
 import joblib
 
 # ----------------------------
-# Load trained model
+# Load trained model & scaler
 # ----------------------------
 model = joblib.load("digital_addiction_model.pkl")
+scaler = joblib.load("scaler.pkl")
 
 # ----------------------------
 # Page Configuration
@@ -23,7 +24,6 @@ st.markdown("---")
 
 # ----------------------------
 # Feature Order
-# (Must match X.columns exactly)
 # ----------------------------
 feature_order = [
     'age',
@@ -48,6 +48,8 @@ gender_map = {
     "Male": 1
 }
 
+# IMPORTANT:
+# These mappings must match your training data encoding
 stress_map = {
     "High": 0,
     "Low": 1,
@@ -164,11 +166,14 @@ if st.button("Predict"):
         academic_map[academic_work_impact]
     ]], columns=feature_order)
 
-    prediction = model.predict(input_data)[0]
+    # Scale input
+    input_scaled = scaler.transform(input_data)
+
+    prediction = model.predict(input_scaled)[0]
 
     if prediction == 1:
         st.success("⚠️ Addicted")
-    elif prediction == 0:
+    else:
         st.success("✅ Not Addicted")
 
     st.markdown("---")
