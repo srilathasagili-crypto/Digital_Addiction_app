@@ -166,9 +166,9 @@ if st.button("Predict"):
 
     prediction = model.predict(input_data)[0]
 
-    if prediction == 0:
-        st.error("⚠️ Addicted")
-    else:
+    if prediction == 1:
+        st.success("⚠️ Addicted")
+    elif prediction == 0:
         st.success("✅ Not Addicted")
 
     st.markdown("---")
