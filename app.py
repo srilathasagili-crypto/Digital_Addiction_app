@@ -166,15 +166,23 @@ if st.button("Predict"):
         academic_map[academic_work_impact]
     ]], columns=feature_order)
 
-    # Scale input
+    # Scale input data
     input_scaled = scaler.transform(input_data)
 
+    # Prediction
     prediction = model.predict(input_scaled)[0]
+
+    # Probability
+    prob = model.predict_proba(input_scaled)[0]
 
     if prediction == 1:
         st.success("⚠️ Addicted")
     else:
         st.success("✅ Not Addicted")
+
+    st.write(f"### Addiction Probability: {prob[1]*100:.2f}%")
+
+    st.progress(float(prob[1]))
 
     st.markdown("---")
 
